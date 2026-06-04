@@ -1,0 +1,239 @@
+/* ==========================================
+   ESTILOS BASE DEL SIDEBAR (Para escritorio)
+   ========================================== */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background: #000;
+    /* Fondo negro sólido */
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1010;
+    /* Un z-index más alto para que nadie se le suba encima */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.open {
+    width: 260px;
+}
+
+.sidebar.closed {
+    width: 70px;
+}
+
+/* Header */
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 70px;
+    box-sizing: border-box;
+}
+
+.tittle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.tittle img {
+    width: 30px;
+    height: auto;
+}
+
+.sidebar.closed .tittle h2 {
+    display: none;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Navegación */
+.sidebar-nav {
+    padding: 20px 0;
+    flex-grow: 1;
+    /* Hace que el menú ocupe el espacio disponible */
+    overflow-y: auto;
+    /* Por si tienes muchas categorías, genera scroll interno */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #ccc;
+    text-decoration: none;
+    transition: all 0.2s;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.menu-item.active {
+    border-left: 4px solid #1abc9c;
+    background: rgba(26, 188, 156, 0.1);
+}
+
+.sidebar.closed .menu-item .text {
+    display: none;
+}
+
+.sidebar.closed .menu-item {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+/* Footer y Usuario */
+.sidebar-footer {
+    width: 100%;
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #0a0a0a;
+    box-sizing: border-box;
+    /* Evita que el 100% del ancho rompa el layout */
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #1abc9c;
+    flex-shrink: 0;
+}
+
+.user-icon-placeholder {
+    color: #7f8c8d;
+    flex-shrink: 0;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+.sidebar.closed .user-text {
+    display: none;
+}
+
+.logout-mini-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    padding: 0;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    width: fit-content;
+}
+
+.logout-mini-btn:hover {
+    text-decoration: underline;
+}
+
+/* Botón Hamburguesa/Toggle */
+.sidebar-toggle {
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    background: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1020;
+    /* ¡MÁS ALTO QUE EL SIDEBAR! Así nunca se queda abajo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.05);
+}
+
+
+/* ==========================================
+   VERSION RESPONSIVE (Móviles y Tablets)
+   ========================================== */
+@media (max-width: 768px) {
+
+    /* El sidebar por defecto se esconde a la izquierda de la pantalla */
+    .sidebar {
+        left: -260px;
+        width: 260px !important;
+        /* Forzamos ancho completo en celular */
+    }
+
+    /* Cuando esté "open", entra desde la izquierda */
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Anulamos el modo "closed" (icono chiquito) en móvil, o se esconde o se muestra entero */
+    .sidebar.closed {
+        left: -260px;
+    }
+
+    /* Hacemos que se vea el botón de cerrar en móviles siempre */
+    .close-btn {
+        display: flex !important;
+    }
+
+    .sidebar.closed .tittle h2 {
+        display: block;
+    }
+}
+
+/* Busca esta parte y déjala así de simple */
+.menu-item.active {
+    /* Quitamos el border-left fijo y el background fijo para que mande el estilo dinámico de React */
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.menu-item .icon {
+    font-size: 20px;
+    min-width: 30px;
+    transition: color 0.3s ease;
+    /* Para que el cambio de color sea suave */
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ProductSearch from './ProductSearch';
 import Cart from './Cart';
-import InvoiceModal from './InviceModal';
+import InvoiceModal from './InvoiceModal'; // ← Nombre corregido (estaba InviceModal)
 import api from '../../api/axios';
 
 export default function NewSale({ onBack }) {
@@ -13,7 +13,6 @@ export default function NewSale({ onBack }) {
     const [invoiceData, setInvoiceData] = useState(null);
     const [showInvoice, setShowInvoice] = useState(false);
 
-    // Cargar productos
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -75,10 +74,22 @@ export default function NewSale({ onBack }) {
                 tax: 0
             };
 
+            // Crear la venta
             const response = await api.post('/sales', saleData);
-            const invoiceResponse = await api.get(`/sales/${response.data.sale.id}/invoice-data`);
 
-            setInvoiceData(invoiceResponse.data.data);
+            // Obtener los datos de la factura usando el ID de la venta
+            const saleId = response.data.sale?.id || response.data.data?.sale_id;
+
+            if (!saleId) {
+                throw new Error('No se pudo obtener el ID de la venta');
+            }
+
+            const invoiceResponse = await api.get(`/sales/${saleId}/invoice-data`);
+
+            // La respuesta puede estar en data.data o directamente en data
+            const invoiceInfo = invoiceResponse.data.data || invoiceResponse.data;
+
+            setInvoiceData(invoiceInfo);
             setShowInvoice(true);
             setCart([]);
 

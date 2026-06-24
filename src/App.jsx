@@ -5,31 +5,15 @@ import Dashboard from "./components/Dashboard";
 import Products from "./components/Products";
 import Categories from "./components/Categories";
 import Suppliers from "./components/Suppliers";
-import Sales from "./components/sales/Sales"; // <--- 1. IMPORTANTE: Importar el nuevo componente
-import api from "./api/axios"; // <--- 2. IMPORTANTE: Importar tu instancia de axios
+import Sales from "./components/sales/Sales";
+import Users from "./components/Users";
+import api from "./api/axios";
 import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [currentView, setCurrentView] = useState("dashboard");
-  const [productos, setProductos] = useState([]);
-
-  // Cargar productos para que el componente de Ventas los tenga disponibles
-  useEffect(() => {
-    if (isAuthenticated) {
-      const fetchInitialData = async () => {
-        try {
-          const response = await api.get('/products');
-          // Guardamos los productos en el estado global de la App
-          setProductos(response.data.data || response.data);
-        } catch (error) {
-          console.error("Error cargando productos para ventas:", error);
-        }
-      };
-      fetchInitialData();
-    }
-  }, [isAuthenticated]);
 
   // Persistencia de sesión
   useEffect(() => {
@@ -48,6 +32,29 @@ function App() {
     setCurrentView("dashboard");
   };
 
+  // Verificar si el usuario tiene acceso a una vista
+  const hasAccess = (view) => {
+    if (!user) return false;
+
+    const role = user.position;
+    const accessMap = {
+      'Administrador': ['dashboard', 'productos', 'proveedores', 'ventas', 'usuarios'],
+      'Cajero': ['dashboard', 'ventas', 'productos'],
+      'Vendedor': ['dashboard', 'ventas', 'productos'],
+      'Almacenista': ['dashboard', 'productos', 'proveedores'],
+    };
+
+    const allowedViews = accessMap[role] || ['dashboard'];
+    return allowedViews.includes(view);
+  };
+
+  // Si el usuario no tiene acceso a la vista actual, redirigir a dashboard
+  useEffect(() => {
+    if (user && !hasAccess(currentView)) {
+      setCurrentView('dashboard');
+    }
+  }, [currentView, user]);
+
   if (!isAuthenticated) {
     return <Login onLoginSuccess={() => {
       setIsAuthenticated(true);
@@ -65,25 +72,22 @@ function App() {
       />
 
       <main style={{
-        flexGrow: 1, // Para que ocupe el resto de la pantalla
+        flexGrow: 1,
         paddingLeft: window.innerWidth > 768 ? (currentView === 'login' ? '0px' : (currentView && currentView !== 'login' ? '280px' : '90px')) : '20px',
         paddingRight: '20px',
         transition: 'all 0.3s ease'
       }}>
-        {/* Cabecera del contenido */}
         <header style={{ padding: '20px 0', borderBottom: '1px solid #eee' }}>
           <h1 style={{ color: '#2c3e50' }}>Kárdex, sistemas y controles</h1>
         </header>
 
-        {/* Renderizado dinámico */}
         <div className="content-area" style={{ padding: '20px 0' }}>
           {currentView === "dashboard" && <Dashboard />}
           {currentView === "productos" && <Products />}
           {currentView === "categorias" && <Categories />}
           {currentView === "proveedores" && <Suppliers />}
-
-          {/* 3. AGREGADO: Aquí se muestra el componente de ventas */}
-          {currentView === "ventas" && <Sales productos={productos} />}
+          {currentView === "ventas" && <Sales />}
+          {currentView === "usuarios" && <Users />}
         </div>
       </main>
     </div>

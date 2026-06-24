@@ -5,7 +5,7 @@ import '../../styles/Sales.css';
 
 
 export default function Sales() {
-    const [view, setView] = useState('list'); // 'list' o 'new'
+    const [view, setView] = useState('list');
 
     if (view === 'list') {
         return <SalesList onNewSale={() => setView('new')} />;

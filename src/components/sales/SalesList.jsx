@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
 import { FaCashRegister, FaPlus, FaEye } from 'react-icons/fa';
 import api from '../../api/axios';
-import SaleDetailModal from './SalesDetailModal';
+import InvoiceModal from './InvoiceModal'; // ← Cambiar a InvoiceModal
 
 export default function SalesList({ onNewSale }) {
     const [sales, setSales] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedSale, setSelectedSale] = useState(null);
-    const [showDetail, setShowDetail] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false); // ← Cambiar nombre
+    const [detailLoading, setDetailLoading] = useState(false);
 
     const fetchSales = async () => {
         setLoading(true);
         setError(null);
         try {
             const response = await api.get('/sales');
+            console.log('📦 Ventas obtenidas:', response.data);
             const salesData = response.data.data || response.data || [];
             setSales(Array.isArray(salesData) ? salesData : []);
         } catch (err) {
-            console.error('Error cargando ventas:', err);
+            console.error('❌ Error cargando ventas:', err);
             setError('No se pudieron cargar las ventas');
         } finally {
             setLoading(false);
@@ -30,13 +32,64 @@ export default function SalesList({ onNewSale }) {
     }, []);
 
     const viewSaleDetail = async (saleId) => {
+        setDetailLoading(true);
         try {
-            const response = await api.get(`/sales/${saleId}/invoice-data`);
-            setSelectedSale(response.data.data);
-            setShowDetail(true);
+            console.log('🔍 Obteniendo detalle de venta ID:', saleId);
+
+            // Intentar con el endpoint de factura primero
+            let response;
+            try {
+                response = await api.get(`/sales/${saleId}/invoice-data`);
+            } catch (invoiceError) {
+                console.log('⚠️ Falló invoice-data, intentando con /sales:', invoiceError);
+                response = await api.get(`/sales/${saleId}`);
+            }
+
+            console.log('📦 Respuesta:', response.data);
+
+            // Extraer datos
+            const saleData = response.data.data || response.data;
+
+            // Formatear para el modal de factura
+            const formattedData = {
+                invoice_number: saleData.invoice_number || 'N/A',
+                date: saleData.date || new Date(saleData.created_at).toLocaleDateString('es-GT'),
+                payment_method: saleData.payment_method || 'cash',
+                cashier: {
+                    name: saleData.cashier?.name || saleData.user?.name || 'Admin'
+                },
+                store: saleData.store || {
+                    name: 'Mi Tienda',
+                    address: 'Dirección de la tienda',
+                    phone: '1234-5678',
+                    nit: '1234567-8'
+                },
+                items: (saleData.items || []).map(item => ({
+                    name: item.name || item.product?.name || 'Producto',
+                    quantity: item.quantity || 1,
+                    unit_price: parseFloat(item.unit_price) || 0,
+                    subtotal: parseFloat(item.subtotal) || 0,
+                    product: {
+                        images: item.product?.images || [],
+                        description: item.product?.description || '',
+                        barcode: item.product?.barcode || ''
+                    }
+                })),
+                subtotal: parseFloat(saleData.subtotal) || 0,
+                tax: parseFloat(saleData.tax) || 0,
+                total: parseFloat(saleData.total) || 0
+            };
+
+            console.log('📦 Datos formateados:', formattedData);
+
+            setSelectedSale(formattedData);
+            setShowInvoice(true); // ← Mostrar factura en lugar de detalle
         } catch (err) {
-            console.error('Error cargando detalle:', err);
-            alert('Error al cargar el detalle de la venta');
+            console.error('❌ Error cargando detalle:', err);
+            console.error('❌ Response error:', err.response);
+            alert(`Error al cargar el detalle: ${err.response?.data?.message || err.message}`);
+        } finally {
+            setDetailLoading(false);
         }
     };
 
@@ -108,14 +161,15 @@ export default function SalesList({ onNewSale }) {
                                                 sale.payment_method === 'card' ? 'Tarjeta' : 'Transferencia'}
                                         </span>
                                     </td>
-                                    <td>{new Date(sale.created_at).toLocaleDateString()}</td>
+                                    <td>{new Date(sale.created_at).toLocaleDateString('es-GT')}</td>
                                     <td>
                                         <button
                                             className="btn-view"
                                             title="Ver detalle"
                                             onClick={() => viewSaleDetail(sale.id)}
+                                            disabled={detailLoading}
                                         >
-                                            <FaEye />
+                                            {detailLoading ? '...' : <FaEye />}
                                         </button>
                                     </td>
                                 </tr>
@@ -125,11 +179,14 @@ export default function SalesList({ onNewSale }) {
                 </div>
             )}
 
-            {/* Modal de detalle de venta */}
-            {showDetail && selectedSale && (
-                <SaleDetailModal
-                    sale={selectedSale}
-                    onClose={() => setShowDetail(false)}
+            {/* Modal de factura - usando InvoiceModal en lugar de SaleDetailModal */}
+            {showInvoice && selectedSale && (
+                <InvoiceModal
+                    data={selectedSale}
+                    onClose={() => {
+                        setShowInvoice(false);
+                        setSelectedSale(null);
+                    }}
                 />
             )}
         </div>

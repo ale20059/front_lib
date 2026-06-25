@@ -28,6 +28,7 @@ const Dashboard = () => {
         <div style={styles.container}>
             <h2 style={styles.title}>Resumen del Almacén</h2>
 
+
             {/* Fila de Tarjetas (Cards) */}
             <div style={styles.grid}>
                 <div style={{ ...styles.card, borderLeft: '5px solid #28a745' }}>

@@ -79,6 +79,9 @@ export default function Users() {
         setShowModal(true);
     };
 
+
+    //para eliminar un usuario por el momento hacerlo desde la base de datos 
+
     // Eliminar usuario
     const handleDelete = async (id) => {
         if (!window.confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.')) return;

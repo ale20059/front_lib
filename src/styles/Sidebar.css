@@ -6,9 +6,9 @@
     left: 0;
     top: 0;
     height: 100vh;
-    background: #000;
+    background: #BCE6FF;
     /* Fondo negro sólido */
-    color: white;
+    color: #006eff;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1010;
     /* Un z-index más alto para que nadie se le suba encima */
@@ -55,7 +55,7 @@
 .close-btn {
     background: none;
     border: none;
-    color: white;
+    color: #006eff;
     cursor: pointer;
     padding: 5px;
     display: flex;
@@ -82,7 +82,7 @@
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #ccc;
+    color: #006eff;
     text-decoration: none;
     transition: all 0.2s;
     gap: 12px;
@@ -92,7 +92,7 @@
 .menu-item:hover,
 .menu-item.active {
     background: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: #006eff;
 }
 
 .menu-item.active {
@@ -135,7 +135,7 @@
 }
 
 .user-icon-placeholder {
-    color: #7f8c8d;
+    color: #006eff;
     flex-shrink: 0;
 }
 
@@ -173,7 +173,7 @@
     left: 15px;
     top: 15px;
     background: #1abc9c;
-    color: white;
+    color: #006eff;
     border: none;
     border-radius: 50%;
     width: 45px;

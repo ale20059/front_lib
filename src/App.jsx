@@ -9,6 +9,7 @@ import Sales from "./components/sales/Sales";
 import Users from "./components/Users";
 import api from "./api/axios";
 import './App.css';
+import logo from './assets/logo.png';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,6 +80,7 @@ function App() {
       }}>
         <header style={{ padding: '20px 0', borderBottom: '1px solid #eee' }}>
           <h1 style={{ color: '#2c3e50' }}>Kárdex, sistemas y controles</h1>
+          <img src={logo} alt="Logo" style={{ width: '100px', position: 'absolute', top: '20px', right: '100px' }} />
         </header>
 
         <div className="content-area" style={{ padding: '20px 0' }}>
@@ -90,7 +92,7 @@ function App() {
           {currentView === "usuarios" && <Users />}
         </div>
       </main>
-    </div>
+    </div >
   );
 }
 

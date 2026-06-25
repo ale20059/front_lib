@@ -90,11 +90,11 @@ export default function Sidebar({ onNavigate, activeView, user, onLogout }) {
                                             backgroundColor: isActive ? `${item.color}15` : 'transparent'
                                         }}
                                     >
-                                        <span className="icon" style={{ color: isActive ? item.color : '#ccc' }}>
+                                        <span className="icon" style={{ color: isActive ? item.color : '#006eff' }}>
                                             {item.icono}
                                         </span>
                                         <span className="text" style={{
-                                            color: isActive ? 'white' : '#ccc',
+                                            color: isActive ? '#006eff' : '#006eff',
                                             fontWeight: isActive ? 'bold' : 'normal'
                                         }}>
                                             {item.nombre}
@@ -118,14 +118,14 @@ export default function Sidebar({ onNavigate, activeView, user, onLogout }) {
                                 }}
                             />
                         ) : (
-                            <FaUserCircle className="user-icon-placeholder" size={30} color="#64748b" />
+                            <FaUserCircle className="user-icon-placeholder" size={30} color="#006eff" />
                         )}
 
                         <div className="user-text">
                             <span className="text">{user?.name || 'Invitado'}</span>
                             <span className="user-role" style={{
                                 fontSize: '11px',
-                                color: '#94a3b8',
+                                color: '#006eff',
                                 display: 'block',
                                 marginTop: '2px'
                             }}>

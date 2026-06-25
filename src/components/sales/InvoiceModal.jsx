@@ -59,15 +59,17 @@ export default function InvoiceModal({ data, onClose }) {
                                         <h1 className="invoice-brand-name">KARDEX</h1>
                                     </div>
 
+                                    {/*ESTE BLOQUE CONTIENE LOS DATOS DE LA EMPRESA, PERO ANTERIOR ERAN DATOS POR SI AGREGAMOS UNA TABLA CLIENTES*/}
                                     <div className="invoice-client-info">
-                                        <h3>DATOS DEL CLIENTE</h3>
-                                        <p><strong>Dirección:</strong> {{/*data.store?.address || */ }, '---'}</p>
-                                        <p><strong>Correo:</strong> {{/*data.store?.email || */ }, '---'}</p>
-                                        <p><strong>Teléfono:</strong> {{/*data.store?.phone || */ }, '---'}</p>
+                                        <h3>DATOS DE LA EMPRESA</h3>
+                                        <p><strong>Dirección:</strong> {{/*data.store?.address || */ }, '3C Callejón | 3-09 Zona 2, Santo Tomás Milpas Altas, Sacatepéqez, Guatemala'}</p>
+                                        <p><strong>Correo:</strong> {{/*data.store?.email || */ }, 'kardexsistemasycontroles@gmail.com'}</p>
+                                        <p><strong>Teléfono:</strong> {{/*data.store?.phone || */ }, '+502 39477441'}</p>
+                                        <p><strong>NIT</strong> {{/*data.store?.phone || */ }, '254563354'}</p>
                                     </div>
 
                                     <div className="invoice-date-tag">
-                                        FECHA: {formatDate(data.date)}
+                                        FECHA: {formatDate(data.date || data.created_at || data.sale_date)}
                                     </div>
                                 </div>
 
@@ -116,8 +118,8 @@ export default function InvoiceModal({ data, onClose }) {
                             {/* FOOTER CON DESGLOSE AUTOMÁTICO */}
                             <div className="invoice-footer-section">
                                 <div className="invoice-notes">
-                                    <span className="invoice-notes-title">Nota:</span>
-                                    <p>Gracias por su compra. Este documento es una factura de consumo.</p>
+                                    <span className="invoice-notes-title">1 Corintios 14:40:</span>
+                                    <p>Pero hágase todo descendentemente y con orden.</p>
                                 </div>
 
                                 <div className="invoice-totals">

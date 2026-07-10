@@ -7,6 +7,7 @@ import Categories from "./components/Categories";
 import Suppliers from "./components/Suppliers";
 import Sales from "./components/sales/Sales";
 import Users from "./components/Users";
+import InternalProducts from './components/InternalProducts';
 import api from "./api/axios";
 import './App.css';
 import logo from './assets/logo.png';
@@ -39,10 +40,10 @@ function App() {
 
     const role = user.position;
     const accessMap = {
-      'Administrador': ['dashboard', 'productos', 'proveedores', 'ventas', 'usuarios'],
-      'Cajero': ['dashboard', 'ventas', 'productos'],
-      'Vendedor': ['dashboard', 'ventas', 'productos'],
-      'Almacenista': ['dashboard', 'productos', 'proveedores'],
+      'Administrador': ['dashboard', 'productos', 'proveedores', 'ventas', 'usuarios', 'internos'], // ⭐ AGREGAR 'internos'
+      'Cajero': ['dashboard', 'ventas', 'productos', 'internos'], // ⭐ AGREGAR 'internos'
+      'Vendedor': ['dashboard', 'ventas', 'productos', 'internos'], // ⭐ AGREGAR 'internos'
+      'Almacenista': ['dashboard', 'productos', 'proveedores', 'internos'], // ⭐ AGREGAR 'internos'
     };
 
     const allowedViews = accessMap[role] || ['dashboard'];
@@ -78,7 +79,7 @@ function App() {
         paddingRight: '20px',
         transition: 'all 0.3s ease'
       }}>
-        <header style={{ padding: '20px 0', borderBottom: '1px solid #eee' }}>
+        <header style={{ padding: '20px 0', borderBottom: '1px solid #eee', position: 'relative' }}>
           <h1 style={{ color: '#2c3e50' }}>Kárdex, sistemas y controles</h1>
           <img src={logo} alt="Logo" style={{ width: '100px', position: 'absolute', top: '20px', right: '100px' }} />
         </header>
@@ -90,9 +91,10 @@ function App() {
           {currentView === "proveedores" && <Suppliers />}
           {currentView === "ventas" && <Sales />}
           {currentView === "usuarios" && <Users />}
+          {currentView === "internos" && <InternalProducts />}
         </div>
       </main>
-    </div >
+    </div>
   );
 }
 

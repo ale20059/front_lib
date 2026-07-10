@@ -26,23 +26,23 @@ export default function Sidebar({ onNavigate, activeView, user, onLogout }) {
                 { id: 'proveedores', nombre: 'Proveedores', icono: <FaDollyFlatbed />, color: '#3357FF' },
                 { id: 'ventas', nombre: 'Ventas', icono: <FaCashRegister />, color: '#2ecc71' },
                 { id: 'usuarios', nombre: 'Usuarios', icono: <FaUsers />, color: '#8B5CF6' },
-                { id: 'internos', nombre: 'Productos Internos', icono: <FaBoxes />, color: '#8B5CF6' },
+
                 // { id: 'categorias', nombre: 'Categorías', icono: <FaTags />, color: '#FFC300' },
             ],
             'Cajero': [
                 { id: 'ventas', nombre: 'Ventas', icono: <FaCashRegister />, color: '#2ecc71' },
                 { id: 'productos', nombre: 'Productos', icono: <FaGripHorizontal />, color: '#33FF57' },
-                { id: 'internos', nombre: 'Productos Internos', icono: <FaBoxes />, color: '#8B5CF6' },
+
             ],
             'Vendedor': [
                 { id: 'ventas', nombre: 'Ventas', icono: <FaCashRegister />, color: '#2ecc71' },
                 { id: 'productos', nombre: 'Productos', icono: <FaGripHorizontal />, color: '#33FF57' },
-                { id: 'internos', nombre: 'Productos Internos', icono: <FaBoxes />, color: '#8B5CF6' },
+
             ],
             'Almacenista': [
                 { id: 'productos', nombre: 'Productos', icono: <FaGripHorizontal />, color: '#33FF57' },
                 { id: 'proveedores', nombre: 'Proveedores', icono: <FaDollyFlatbed />, color: '#3357FF' },
-                { id: 'internos', nombre: 'Productos Internos', icono: <FaBoxes />, color: '#8B5CF6' },
+                { id: 'internos', nombre: 'Productos Internos', icono: <FaBoxes />, color: '#FF7C65' },
             ],
         };
 

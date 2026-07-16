@@ -3,20 +3,11 @@ import { FaTrash, FaPlus, FaMinus, FaImage } from 'react-icons/fa';
 export default function CartItem({ item, onUpdateQuantity, onRemove }) {
     const subtotal = item.price * item.quantity;
 
-    // Usamos 127.0.0.1 para ser consistentes con tu otro componente
-    const API_URL = 'http://127.0.0.1:8000';
-
     return (
         <div className="cart-item">
             <div className="cart-item-image">
-                {/* Corregido: Accedemos a item.images[0].url 
-                    tal como lo haces en el inventario 
-                */}
-                {item.images && item.images.length > 0 ? (
-                    <img
-                        src={`${API_URL}${item.images[0].url}`}
-                        alt={item.name}
-                    />
+                {item.image ? (
+                    <img src={item.image} alt={item.name} />
                 ) : (
                     <div className="mini-placeholder">
                         <FaImage />
@@ -27,6 +18,11 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }) {
             <div className="cart-item-info">
                 <div className="cart-item-name">{item.name}</div>
                 <div className="cart-item-price">Q{item.price.toFixed(2)} c/u</div>
+                {item.talla && (
+                    <div className="cart-item-talla">
+                        Talla: <strong>{item.talla}</strong>
+                    </div>
+                )}
                 {item.description && (
                     <div className="cart-item-description">
                         {item.description.substring(0, 40)}...
@@ -38,7 +34,6 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }) {
                 <button
                     className="qty-btn"
                     onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                    disabled={item.quantity <= 1}
                 >
                     <FaMinus />
                 </button>

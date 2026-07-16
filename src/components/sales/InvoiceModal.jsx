@@ -6,31 +6,23 @@ export default function InvoiceModal({ data, onClose }) {
         window.print();
     };
 
-    const formatDate = (dateString) => {
-        const validDate = dateString || data?.created_at || data?.fecha || data?.sale_date;
-        if (!validDate) return '---';
-
-        const normalizedDate = typeof validDate === 'string' && validDate.includes('-')
-            ? validDate.replace(/-/g, '/')
-            : validDate;
-
-        const date = new Date(normalizedDate);
-        if (isNaN(date.getTime())) {
-            return '---';
-        }
-
-        return date.toLocaleDateString('es-GT', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-    };
-
     if (!data) return null;
 
-    // --- CÁLCULO LOGÍSTICO DEL IVA 12% (GUATEMALA) ---
+    // ===== MOSTRAR LA FECHA DIRECTAMENTE COMO TEXTO =====
+    // Tomamos la fecha que venga del backend
+    const fechaMostrada = data?.date || data?.created_at || data?.fecha || data?.sale_date || '---';
+
+    console.log('📅 Fecha a mostrar:', fechaMostrada);
+
+    // === DATOS DEL PEDIDO ===
+    const grado = data.grado || data.pedido?.grado || '---';
+    const estudiante = data.estudiante || data.pedido?.estudiante || '---';
+    const talla = data.talla || data.pedido?.talla || '---';
+    const boleta = data.boleta || data.pedido?.boleta || '---';
+    const quienEntrego = data.quien_entrego || data.pedido?.quien_entrego || '---';
+
+    // === CÁLCULO DEL IVA ===
     const totalFactura = parseFloat(data.total || 0);
-    // En Guate, el precio ya incluye el IVA, así que lo desglosamos:
     const subTotalSinIva = totalFactura / 1.12;
     const ivaCalculado = totalFactura - subTotalSinIva;
 
@@ -59,17 +51,17 @@ export default function InvoiceModal({ data, onClose }) {
                                         <h1 className="invoice-brand-name">KARDEX</h1>
                                     </div>
 
-                                    {/*ESTE BLOQUE CONTIENE LOS DATOS DE LA EMPRESA, PERO ANTERIOR ERAN DATOS POR SI AGREGAMOS UNA TABLA CLIENTES*/}
                                     <div className="invoice-client-info">
                                         <h3>DATOS DE LA EMPRESA</h3>
-                                        <p><strong>Dirección:</strong> {{/*data.store?.address || */ }, '3C Callejón | 3-09 Zona 2, Santo Tomás Milpas Altas, Sacatepéqez, Guatemala'}</p>
-                                        <p><strong>Correo:</strong> {{/*data.store?.email || */ }, 'kardexsistemasycontroles@gmail.com'}</p>
-                                        <p><strong>Teléfono:</strong> {{/*data.store?.phone || */ }, '+502 39477441'}</p>
-                                        <p><strong>NIT</strong> {{/*data.store?.phone || */ }, '254563354'}</p>
+                                        <p><strong>Dirección:</strong> 3C Callejón | 3-09 Zona 2, Santo Tomás Milpas Altas, Sacatepéqez, Guatemala</p>
+                                        <p><strong>Correo:</strong> kardexsistemasycontroles@gmail.com</p>
+                                        <p><strong>Teléfono:</strong> +502 39477441</p>
+                                        <p><strong>NIT:</strong> 254563354</p>
                                     </div>
 
+                                    {/* === FECHA MOSTRADA DIRECTAMENTE === */}
                                     <div className="invoice-date-tag">
-                                        FECHA: {formatDate(data.date || data.created_at || data.sale_date)}
+                                        FECHA: {fechaMostrada}
                                     </div>
                                 </div>
 
@@ -77,6 +69,35 @@ export default function InvoiceModal({ data, onClose }) {
                                     <div className="invoice-ribbon-box">
                                         <h2>FACTURA NÚMERO</h2>
                                         <div className="invoice-ribbon-number">{data.invoice_number || '---'}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* === SECCIÓN: DATOS DEL PEDIDO === */}
+                            <div className="invoice-pedido-section">
+                                <div className="pedido-title">
+                                    <h3>📋 DATOS DEL PEDIDO</h3>
+                                </div>
+                                <div className="pedido-grid">
+                                    <div className="pedido-item">
+                                        <span className="pedido-label">Grado:</span>
+                                        <span className="pedido-value">{grado}</span>
+                                    </div>
+                                    <div className="pedido-item">
+                                        <span className="pedido-label">Estudiante:</span>
+                                        <span className="pedido-value">{estudiante}</span>
+                                    </div>
+                                    <div className="pedido-item">
+                                        <span className="pedido-label">Talla:</span>
+                                        <span className="pedido-value">{talla}</span>
+                                    </div>
+                                    <div className="pedido-item">
+                                        <span className="pedido-label">Boleta:</span>
+                                        <span className="pedido-value">{boleta}</span>
+                                    </div>
+                                    <div className="pedido-item">
+                                        <span className="pedido-label">Quien entregó:</span>
+                                        <span className="pedido-value">{quienEntrego}</span>
                                     </div>
                                 </div>
                             </div>
@@ -115,7 +136,7 @@ export default function InvoiceModal({ data, onClose }) {
                                 </tbody>
                             </table>
 
-                            {/* FOOTER CON DESGLOSE AUTOMÁTICO */}
+                            {/* FOOTER */}
                             <div className="invoice-footer-section">
                                 <div className="invoice-notes">
                                     <span className="invoice-notes-title">1 Corintios 14:40:</span>
@@ -156,7 +177,6 @@ export default function InvoiceModal({ data, onClose }) {
             </div>
 
             <style>{`
-                /* MODAL BASE */
                 .invoice-modal-overlay {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
@@ -197,7 +217,6 @@ export default function InvoiceModal({ data, onClose }) {
                 }
                 .invoice-btn-close:hover { background: #e2e8f0; }
 
-                /* DISEÑO EN PANTALLA */
                 .invoice-paper {
                     width: 100%; max-width: 800px; min-height: 1050px; background-color: #ffffff;
                     position: relative; padding: 0 50px; display: flex; flex-direction: column;
@@ -209,7 +228,7 @@ export default function InvoiceModal({ data, onClose }) {
                 .invoice-bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #d1ecf9; }
                 
                 .invoice-header-container {
-                    margin-top: 80px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; position: relative; z-index: 2; width: 100%;
+                    margin-top: 80px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; position: relative; z-index: 2; width: 100%;
                 }
                 .invoice-brand-side { flex: 1; }
                 .invoice-logo-wrapper { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
@@ -226,30 +245,153 @@ export default function InvoiceModal({ data, onClose }) {
                     content: ""; position: absolute; bottom: -25px; left: 0; width: 0; height: 0;
                     border-left: 120px solid #b3e5fc; border-right: 120px solid #b3e5fc; border-bottom: 25px solid transparent;
                 }
-                .invoice-ribbon-content h2 { font-size: 15px; font-weight: 700; letter-spacing: 1px; color: #000; margin-bottom: 15px; }
                 .invoice-ribbon-number { background-color: #ffffff; padding: 8px 0; font-size: 16px; letter-spacing: 3px; color: #000; font-weight: 700; margin-top: 10px; }
 
-                .invoice-items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 2; }
-                .invoice-items-table th { background-color: #b3e5fc; color: #000; font-size: 13px; font-weight: 700; padding: 12px 10px; border: 2px solid #b3e5fc; letter-spacing: 1px; text-align: left; }
-                .invoice-items-table td { padding: 12px 10px; border: 1.5px solid #666666 !important; font-size: 14px; color: #333; height: 42px; }
+                .invoice-pedido-section {
+                    background-color: #f8fafc;
+                    border: 2px solid #b3e5fc;
+                    border-radius: 8px;
+                    padding: 16px 20px;
+                    margin-bottom: 30px;
+                    position: relative;
+                    z-index: 2;
+                }
+
+                .pedido-title h3 {
+                    font-size: 14px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                    color: #0f172a;
+                    margin: 0 0 12px 0;
+                    text-transform: uppercase;
+                    border-bottom: 2px solid #b3e5fc;
+                    padding-bottom: 8px;
+                }
+
+                .pedido-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 12px 20px;
+                }
+
+                .pedido-item {
+                    display: flex;
+                    align-items: baseline;
+                    gap: 6px;
+                    font-size: 14px;
+                    padding: 4px 0;
+                }
+
+                .pedido-label {
+                    font-weight: 600;
+                    color: #475569;
+                    min-width: 70px;
+                }
+
+                .pedido-value {
+                    color: #0f172a;
+                    font-weight: 500;
+                }
+
+                .invoice-items-table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-bottom: 30px; 
+                    position: relative; 
+                    z-index: 2; 
+                }
+                .invoice-items-table th { 
+                    background-color: #b3e5fc; 
+                    color: #000; 
+                    font-size: 13px; 
+                    font-weight: 700; 
+                    padding: 12px 10px; 
+                    border: 2px solid #b3e5fc; 
+                    letter-spacing: 1px; 
+                    text-align: left; 
+                }
+                .invoice-items-table td { 
+                    padding: 12px 10px; 
+                    border: 1.5px solid #666666 !important; 
+                    font-size: 14px; 
+                    color: #333; 
+                    height: 42px; 
+                }
                 .invoice-col-desc { width: 45%; }
                 .invoice-col-qty { width: 13%; text-align: center; }
                 .invoice-col-price { width: 24%; text-align: right; }
                 .invoice-col-total { width: 18%; text-align: right; }
 
-                .invoice-footer-section { display: flex; justify-content: space-between; align-items: flex-start; margin-top: auto; margin-bottom: 100px; gap: 30px; position: relative; z-index: 2; }
-                .invoice-notes { width: 45%; height: 150px; background-color: #e1f5fe; border: 1.5px solid #666666; padding: 12px; box-sizing: border-box; }
-                .invoice-notes-title { font-size: 14px; font-weight: 700; color: #555; display: block; margin-bottom: 8px; }
-                .invoice-notes p { font-size: 13px; color: #333; margin: 0; line-height: 1.6; }
+                .invoice-footer-section { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: flex-start; 
+                    margin-top: auto; 
+                    margin-bottom: 100px; 
+                    gap: 30px; 
+                    position: relative; 
+                    z-index: 2; 
+                }
+                .invoice-notes { 
+                    width: 45%; 
+                    height: 150px; 
+                    background-color: #e1f5fe; 
+                    border: 1.5px solid #666666; 
+                    padding: 12px; 
+                    box-sizing: border-box; 
+                }
+                .invoice-notes-title { 
+                    font-size: 14px; 
+                    font-weight: 700; 
+                    color: #555; 
+                    display: block; 
+                    margin-bottom: 8px; 
+                }
+                .invoice-notes p { 
+                    font-size: 13px; 
+                    color: #333; 
+                    margin: 0; 
+                    line-height: 1.6; 
+                }
                 
-                /* Caja de totales ajustada */
-                .invoice-totals { width: 50%; height: 110px; background-color: #e1f5fe; border: 1.5px solid #666666; display: flex; flex-direction: column; justify-content: space-around; padding: 10px 15px; box-sizing: border-box; }
-                .invoice-total-line { font-size: 15px; color: #333; display: flex; justify-content: flex-start; gap: 20px; }
-                .invoice-total-line span:last-child { margin-left: auto; }
-                .invoice-grand-total { font-weight: 700; font-size: 17px; border-top: 2px solid #333; padding-top: 8px; }
-                .invoice-footer-note { text-align: center; margin-top: 10px; font-size: 13px; color: #666; letter-spacing: 1px; position: relative; z-index: 2; margin-bottom: 60px; }
+                .invoice-totals { 
+                    width: 50%; 
+                    height: 110px; 
+                    background-color: #e1f5fe; 
+                    border: 1.5px solid #666666; 
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: space-around; 
+                    padding: 10px 15px; 
+                    box-sizing: border-box; 
+                }
+                .invoice-total-line { 
+                    font-size: 15px; 
+                    color: #333; 
+                    display: flex; 
+                    justify-content: flex-start; 
+                    gap: 20px; 
+                }
+                .invoice-total-line span:last-child { 
+                    margin-left: auto; 
+                }
+                .invoice-grand-total { 
+                    font-weight: 700; 
+                    font-size: 17px; 
+                    border-top: 2px solid #333; 
+                    padding-top: 8px; 
+                }
+                .invoice-footer-note { 
+                    text-align: center; 
+                    margin-top: 10px; 
+                    font-size: 13px; 
+                    color: #666; 
+                    letter-spacing: 1px; 
+                    position: relative; 
+                    z-index: 2; 
+                    margin-bottom: 60px; 
+                }
 
-                /* IMPRESIÓN SÉMETRICA */
                 @media print {
                     @page { margin: 0mm; size: portrait; }
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -261,11 +403,63 @@ export default function InvoiceModal({ data, onClose }) {
                     .no-print { display: none !important; }
                     .invoice-ribbon-box { background-color: #b3e5fc !important; -webkit-print-color-adjust: exact !important; }
                     .invoice-items-table td, .invoice-notes, .invoice-totals { border: 1.5px solid #333333 !important; }
+                    .invoice-pedido-section { 
+                        background-color: #f8fafc !important; 
+                        border: 2px solid #b3e5fc !important;
+                        -webkit-print-color-adjust: exact !important; 
+                        print-color-adjust: exact !important;
+                    }
                 }
 
                 .invoice-modal-content::-webkit-scrollbar { width: 6px; }
                 .invoice-modal-content::-webkit-scrollbar-track { background: #f1f5f9; }
                 .invoice-modal-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+                @media (max-width: 768px) {
+                    .invoice-header-container {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+                    .invoice-ribbon-side {
+                        width: 100%;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }
+                    .invoice-ribbon-box {
+                        width: 100%;
+                    }
+                    .invoice-pedido-section {
+                        padding: 12px;
+                    }
+                    .pedido-grid {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                    .invoice-footer-section {
+                        flex-direction: column;
+                    }
+                    .invoice-notes, .invoice-totals {
+                        width: 100%;
+                    }
+                    .invoice-paper {
+                        padding: 0 20px;
+                        min-height: auto;
+                    }
+                    .invoice-brand-name {
+                        font-size: 36px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .pedido-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .invoice-brand-name {
+                        font-size: 28px;
+                    }
+                    .invoice-logo-img {
+                        height: 40px;
+                    }
+                }
             `}</style>
         </>
     );

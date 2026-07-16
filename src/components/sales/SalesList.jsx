@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { FaCashRegister, FaPlus, FaEye } from 'react-icons/fa';
 import api from '../../api/axios';
-import InvoiceModal from './InvoiceModal'; // ← Cambiar a InvoiceModal
+import InvoiceModal from './InvoiceModal';
 
 export default function SalesList({ onNewSale }) {
     const [sales, setSales] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedSale, setSelectedSale] = useState(null);
-    const [showInvoice, setShowInvoice] = useState(false); // ← Cambiar nombre
+    const [showInvoice, setShowInvoice] = useState(false);
     const [detailLoading, setDetailLoading] = useState(false);
 
     const fetchSales = async () => {
@@ -36,7 +36,6 @@ export default function SalesList({ onNewSale }) {
         try {
             console.log('🔍 Obteniendo detalle de venta ID:', saleId);
 
-            // Intentar con el endpoint de factura primero
             let response;
             try {
                 response = await api.get(`/sales/${saleId}/invoice-data`);
@@ -45,25 +44,34 @@ export default function SalesList({ onNewSale }) {
                 response = await api.get(`/sales/${saleId}`);
             }
 
-            console.log('📦 Respuesta:', response.data);
+            console.log('📦 Respuesta completa:', response.data);
 
-            // Extraer datos
             const saleData = response.data.data || response.data;
 
-            // Formatear para el modal de factura
+            // === OBTENER LA FECHA ===
+            const fecha = saleData.date || saleData.created_at || saleData.fecha || saleData.sale_date || '---';
+            console.log('📅 Fecha encontrada:', fecha);
+
             const formattedData = {
                 invoice_number: saleData.invoice_number || 'N/A',
-                date: saleData.date || new Date(saleData.created_at).toLocaleDateString('es-GT'),
+                // === PASAR LA FECHA DIRECTAMENTE ===
+                date: fecha,
+                created_at: saleData.created_at,
                 payment_method: saleData.payment_method || 'cash',
                 cashier: {
                     name: saleData.cashier?.name || saleData.user?.name || 'Admin'
                 },
                 store: saleData.store || {
-                    name: 'Mi Tienda',
-                    address: 'Dirección de la tienda',
-                    phone: '1234-5678',
-                    nit: '1234567-8'
+                    name: 'KARDEX',
+                    address: '3C Callejón | 3-09 Zona 2, Santo Tomás Milpas Altas, Sacatepéqez, Guatemala',
+                    phone: '+502 39477441',
+                    nit: '254563354'
                 },
+                grado: saleData.grado || '---',
+                estudiante: saleData.estudiante || '---',
+                talla: saleData.talla || '---',
+                boleta: saleData.boleta || '---',
+                quien_entrego: saleData.quien_entrego || '---',
                 items: (saleData.items || []).map(item => ({
                     name: item.name || item.product?.name || 'Producto',
                     quantity: item.quantity || 1,
@@ -77,16 +85,15 @@ export default function SalesList({ onNewSale }) {
                 })),
                 subtotal: parseFloat(saleData.subtotal) || 0,
                 tax: parseFloat(saleData.tax) || 0,
-                total: parseFloat(saleData.total) || 0
+                total: parseFloat(saleData.total) || 0,
             };
 
-            console.log('📦 Datos formateados:', formattedData);
+            console.log('📅 Fecha formateada para el modal:', formattedData.date);
 
             setSelectedSale(formattedData);
-            setShowInvoice(true); // ← Mostrar factura en lugar de detalle
+            setShowInvoice(true);
         } catch (err) {
             console.error('❌ Error cargando detalle:', err);
-            console.error('❌ Response error:', err.response);
             alert(`Error al cargar el detalle: ${err.response?.data?.message || err.message}`);
         } finally {
             setDetailLoading(false);
@@ -113,7 +120,6 @@ export default function SalesList({ onNewSale }) {
                 </div>
             )}
 
-            {/* Estadísticas */}
             <div className="sales-stats">
                 <div className="stat-card">
                     <span className="stat-label">Total Ventas</span>
@@ -179,7 +185,6 @@ export default function SalesList({ onNewSale }) {
                 </div>
             )}
 
-            {/* Modal de factura - usando InvoiceModal en lugar de SaleDetailModal */}
             {showInvoice && selectedSale && (
                 <InvoiceModal
                     data={selectedSale}
